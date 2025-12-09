@@ -202,6 +202,7 @@ a {
   .product-showcase {
     flex-direction: column;
     align-items: center;
+    visibility: visible;
   }
   .product-card {
     max-width: 90%;
