@@ -6,19 +6,30 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: url("/Frontend/img1.webp") no-repeat center center/cover;
   position: relative;
   overflow: hidden;
 }
 
-/* Dark Overlay for readability */
-body::before {
+/* Login Page Background */
+body.login-bg {
+  background: url("/Frontend/img1.webp") no-repeat center center/cover;
+}
+
+/* Signup Page Background */
+body.signup-bg {
+  background: url("/Frontend/img2.webp") no-repeat center center/cover;
+}
+
+
+body.login-bg::before,
+body.signup-bg::before {
   content: "";
   position: absolute;
   inset: 0;
   background: rgba(0, 0, 0, 0.45);
   z-index: 0;
 }
+
 
 /* Centered Form Container */
 .container {

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Konkan Mart | Admin Panel</title>
+  <link rel="stylesheet" href="admin.css" />
+  <style>
+    body { font-family: Arial; margin:0; background:#f5f5f5; }
+    .sidebar { width:200px; background:#333; color:white; height:100vh; position:fixed; padding:20px; }
+    .sidebar ul { list-style:none; padding:0; }
+    .sidebar li { padding:10px 0; cursor:pointer; }
+    .sidebar li.active { background:#555; }
+    .main { margin-left:220px; padding:20px; }
+    header h1 { margin-bottom:10px; }
+    .cards { display:flex; gap:15px; margin-bottom:20px; }
+    .card { background:white; flex:1; padding:15px; border-radius:5px; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
+
+    table { width:100%; border-collapse:collapse; background:white; box-shadow:0 2px 5px rgba(0,0,0,0.1);}
+    th, td { padding:12px; text-align:center; border-bottom:1px solid #ddd; }
+    th { background:#25a495; color:white; }
+    tbody tr:hover { background:#f5f5f5; }
+
+    .payment-status.pending { color: red; font-weight:bold; }
+    .payment-status.verified { color: green; font-weight:bold; }
+    .payment-status.rejected { color: orange; font-weight:bold; }
+
+    button { padding:5px 10px; border:none; border-radius:3px; cursor:pointer; color:white; }
+    .approve-btn { background:#28a745; }
+    .reject-btn { background:#dc3545; }
+
+    /* Modal for screenshot */
+    .modal { display:none; position:fixed; z-index:10; padding-top:60px; left:0; top:0; width:100%; height:100%; overflow:auto; background-color:rgba(0,0,0,0.6); }
+    .modal-content { margin:auto; display:block; max-width:80%; }
+    .close { position:absolute; top:15px; right:35px; color:white; font-size:40px; font-weight:bold; cursor:pointer; }
+  </style>
+</head>
+<body>
+
+
+
+<div class="main">
+  <header>
+    <h1>Admin Dashboard</h1>
+    <span class="admin-name">Welcome, Admin</span>
+  </header>
+
+
+
+  <section class="table-section">
+    <h2>Recent Orders & Payment Verification</h2>
+    <table border="1" cellpadding="8" cellspacing="0">
+      <thead>
+        <tr>
+          <!-- <th>Order ID</th> -->
+          <th>Customer</th>
+          <th>Amount</th>
+          <th>Payment Proof</th>
+          <th>Payment Status</th>
+          <th>Order Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </section>
+</div>
+
+<!-- Screenshot Modal -->
+<div id="screenshotModal" class="modal">
+  <span class="close" onclick="closeModal()">&times;</span>
+  <img class="modal-content" id="screenshotImg">
+</div>
+
+<script>
+// Screenshot modal
+// Load orders dynamically
+async function loadOrders(){
+  try {
+    const tbody = document.querySelector("tbody");
+    const res = await fetch("http://localhost:4000/api/admin/orders");
+    if(!res.ok) throw new Error("Network response not ok");
+
+    const orders = await res.json();
+    tbody.innerHTML = "";
+
+    // inside loadOrders
+orders.forEach(order => {
+  const proof = order.paymentScreenshot || "";
+  const username = order.userName; // <- real DB value
+  tbody.innerHTML += `
+  <tr data-orderid="${order.orderId}" data-username="${username}">
+    <td>${username || "Guest User"}</td>
+    <td>₹${order.amount || 0}</td>
+    <td>${proof ? `<button onclick="viewScreenshot('${proof}')">View</button>` : "No Proof"}</td>
+    <td class="payment-status ${order.paymentStatus?.toLowerCase() || 'pending'}">${order.paymentStatus || 'Pending'}</td>
+    <td>${order.orderStatus || 'Pending'}</td>
+    <td>
+      <button class="approve-btn" onclick="updateOrderStatus(this,'Verified')">Approve</button>
+      <button class="reject-btn" onclick="updateOrderStatus(this,'Rejected')">Reject</button>
+    </td>
+  </tr>`;
+});
+
+  } catch(err) {
+    console.error("Failed to load orders:", err);
+  }
+}
+
+// Approve / Reject
+async function updateOrderStatus(button, status) {
+  const tr = button.closest("tr");
+  const orderId = tr.dataset.orderid;
+
+  if (!orderId) return console.error("orderId undefined!");
+
+  const orderStatus = status === "Verified" ? "Order Placed" : "Cancelled";
+
+  try {
+    const res = await fetch(`http://localhost:4000/api/admin/orders/${orderId}/status`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ paymentStatus: status, orderStatus })
+    });
+
+    const data = await res.json();
+    console.log("Updated order:", data);
+
+    // Update DOM
+    tr.querySelector(".payment-status").textContent = status;
+    tr.querySelector(".payment-status").className = `payment-status ${status.toLowerCase()}`;
+    tr.querySelector("td:nth-child(5)").textContent = orderStatus;
+
+  } catch (err) {
+    console.error("Failed to update status:", err);
+  }
+}
+
+
+// Screenshot modal
+function viewScreenshot(filename){
+  document.getElementById("screenshotImg").src = "http://localhost:4000/uploads/" + filename;
+  document.getElementById("screenshotModal").style.display = "block";
+}
+function closeModal(){ document.getElementById("screenshotModal").style.display = "none"; }
+
+// Load on page load
+window.addEventListener("DOMContentLoaded", () => {
+  loadOrders();
+  setInterval(loadOrders, 5000);
+});
+
+</script>
+
+
+
+</body>
+</html>

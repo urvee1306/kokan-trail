@@ -1,249 +1,370 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Konkan Mart — Payment</title>
-
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #f9f9f9;
-    }
-
-    .container {
-      max-width: 450px;
-      margin: 40px auto;
-      background: #fff;
-      padding: 25px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-
-    h2 {
-      text-align: center;
-      margin-bottom: 15px;
-    }
-
-    .upi-box {
-      border: 2px dashed #ff7b00;
-      padding: 15px;
-      margin-bottom: 20px;
-      text-align: center;
-      border-radius: 8px;
-    }
-
-    input[type="file"],
-    input[type="text"] {
-      width: 100%;
-      padding: 10px;
-      margin: 12px 0;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 15px;
-    }
-
-    button {
-      width: 100%;
-      padding: 12px;
-      background: #ff7b00;
-      color: #fff;
-      font-size: 18px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background: #e36d00;
-    }
-
-    .preview-img {
-      width: 100%;
-      margin-top: 10px;
-      display: none;
-      border-radius: 8px;
-    }
-  </style>
-</head>
-<body>
-
-  <div class="container">
-    <h2>Complete Your Payment</h2>
-
-    <div class="upi-box">
-      <h3>Scan & Pay</h3>
-      <img src="your_upi_qr.png" width="200" alt="UPI QR"><br>
-      <p><b>UPI ID:</b> konkanmart@upi</p>
-    </div>
-
-    <label><b>Order ID</b></label>
-    <input type="text" id="orderId" placeholder="Enter Order ID">
-
-    <label><b>Upload Payment Screenshot</b></label>
-    <input type="file" id="screenshot" accept="image/*">
-
-    <img id="preview" class="preview-img">
-
-    <button onclick="submitPayment()">Submit Payment</button>
-  </div>
-<form id="paymentForm">
-  <input type="text" id="orderId" placeholder="Order ID">
-  <input type="file" id="screenshot" accept="image/*">
-  <button type="submit">Submit Payment</button>
-</form>
-
-  <script>
-    const fileInput = document.getElementById("screenshot");
-    const preview = document.getElementById("preview");
-
-    // Preview Screenshot
-    fileInput.addEventListener("change", () => {
-      const file = fileInput.files[0];
-      preview.src = URL.createObjectURL(file);
-      preview.style.display = "block";
-    });
-
-    function submitPayment() {
-      const id = document.getElementById("orderId").value;
-
-      if (!id) {
-        alert("Please enter order ID");
-        return;
-      }
-
-      if (!fileInput.files.length) {
-        alert("Please upload payment screenshot");
-        return;
-      }
-
-      alert("Payment uploaded successfully! Admin will verify.");
-      // Here you send data to backend → /api/payment
-    }
-
-    document.getElementById('paymentForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const orderId = document.getElementById('orderId').value.trim();
-  const file = document.getElementById('screenshot').files[0];
-  if (!orderId || !file) { alert('Enter order id and upload screenshot'); return; }
-  const form = new FormData();
-  form.append('screenshot', file);
-  try {
-    const res = await fetch(`http://localhost:4000/api/payment/${orderId}`, { method: 'POST', body: form });
-    const data = await res.json();
-    if (!res.ok) throw data;
-    alert(data.message);
-  } catch (err) {
-    alert(err.error || 'Upload failed');
-  }
-});
-  </script>
-
-</body>
-</html> -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Konkan Mart — Payment</title>
+<meta charset="UTF-8">
+<title>Konkan Mart — Payment</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #f0f0f0;
-    }
-    .container {
-      max-width: 480px;
-      margin: 40px auto;
-      background: #fff;
-      padding: 25px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    h2 { text-align: center; }
-    input[type="text"], input[type="file"] {
-      width: 100%;
-      padding: 10px;
-      margin: 12px 0;
-      border-radius: 6px;
-      border: 1px solid #aaa;
-    }
-    button {
-      width: 100%;
-      padding: 12px;
-      background: #ff7b00;
-      color: white;
-      font-size: 17px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    .preview-img {
-      width: 100%;
-      margin-top: 10px;
-      display: none;
-      border-radius: 8px;
-    }
-  </style>
+<style>
+:root{
+  --green:#2e7d32;
+  --red:#e53935;
+  --orange:#ff7b00;
+  --blue:#1685a4;
+  --bg:#f4f6f3;
+}
+
+*{box-sizing:border-box;font-family:'Poppins',sans-serif}
+
+body{
+  background:linear-gradient(135deg,#e8f5e9,#f1f8e9);
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.container{
+  width:100%;
+  max-width:420px;
+  background:#fff;
+  padding:30px;
+  border-radius:16px;
+  box-shadow:0 12px 28px rgba(0,0,0,0.12);
+}
+
+.brand{
+  text-align:center;
+  margin-bottom:20px;
+}
+.brand h2{
+  color:var(--red);
+  margin-bottom:5px;
+}
+.brand p{
+  font-size:13px;
+  color:#777;
+}
+
+label{
+  font-size:13px;
+  color:#555;
+}
+
+input[type="file"]{
+  width:100%;
+  padding:12px;
+  margin-top:6px;
+  margin-bottom:14px;
+  border-radius:10px;
+  border:1px solid #ccc;
+}
+
+input:focus{
+  outline:none;
+  border-color:var(--green);
+}
+
+.preview{
+  width:100%;
+  border-radius:12px;
+  margin-bottom:15px;
+  display:none;
+  border:1px dashed #ccc;
+}
+
+button{
+  width:100%;
+  padding:12px;
+  background:linear-gradient(135deg,var(--blue),#09bb91a2);
+  color:white;
+  border:none;
+  border-radius:25px;
+  font-size:15px;
+  font-weight:600;
+  cursor:pointer;
+  transition:.3s;
+}
+
+button:hover{
+  transform:translateY(-2px);
+  box-shadow:0 6px 15px rgba(0,0,0,0.25);
+}
+
+button:disabled{
+  opacity:.7;
+  cursor:not-allowed;
+}
+
+.note{
+  margin-top:15px;
+  font-size:12px;
+  color:#777;
+  text-align:center;
+}
+.note span{
+  color:var(--green);
+  font-weight:500;
+}
+</style>
 </head>
 
 <body>
 
 <div class="container">
-  <h2>Complete Your Payment</h2>
+  <div class="brand">
+    <h2>Konkan Mart</h2>
+    <p>Secure Payment Verification</p>
+  </div>
 
-  <label>Order ID</label>
-  <input type="text" id="orderId" placeholder="Enter Order ID">
+  <!-- ORDER ID REMOVED -->
 
-  <label>Upload Payment Screenshot</label>
+  <label>Payment Screenshot</label>
   <input type="file" id="screenshot" accept="image/*">
 
-  <img id="preview" class="preview-img" />
+  <img id="preview" class="preview">
 
-  <button onclick="submitPayment()">Submit Payment</button>
+  <button id="btn">Submit Payment</button>
+
+  <div class="note">
+    Payment will be <span>verified by admin</span><br>
+    Order status updates automatically
+  </div>
 </div>
 
 <script>
-  const preview = document.getElementById("preview");
-  const fileInput = document.getElementById("screenshot");
+const fileInput = document.getElementById("screenshot");
+const preview = document.getElementById("preview");
+const btn = document.getElementById("btn");
 
-  fileInput.addEventListener("change", () => {
-    const file = fileInput.files[0];
-    preview.src = URL.createObjectURL(file);
-    preview.style.display = "block";
-  });
-
-  function submitPayment() {
-    const orderId = document.getElementById("orderId").value.trim();
-    const file = fileInput.files[0];
-
-    if (!orderId) return alert("Enter Order ID");
-    if (!file) return alert("Upload screenshot");
-
-    const reader = new FileReader();
-
-    reader.onload = function(e) {
-      const screenshotData = e.target.result;
-
-      const paymentData = {
-        orderId,
-        screenshot: screenshotData,
-        status: "Pending"
-      };
-
-      localStorage.setItem(orderId, JSON.stringify(paymentData));
-      alert("Payment uploaded successfully!");
-    };
-
-    reader.readAsDataURL(file);
+fileInput.onchange = () => {
+  const file = fileInput.files[0];
+  if(!file || !file.type.startsWith("image/")){
+    alert("Only image files allowed");
+    fileInput.value = "";
+    return;
   }
+  preview.src = URL.createObjectURL(file);
+  preview.style.display = "block";
+};
+
+btn.onclick = async () => {
+  const file = fileInput.files[0];
+
+  if(!file){
+    alert("Please upload payment screenshot");
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerText = "Uploading...";
+
+  const fd = new FormData();
+  fd.append("screenshot", file);
+
+  try{
+    const res = await fetch("http://localhost:4000/api/payment",{
+      method:"POST",
+      body:fd
+    });
+
+    const data = await res.json();
+    if(!res.ok) throw data;
+
+    btn.innerText = "Submitted ✅";
+    alert("Payment uploaded successfully!");
+  }catch(err){
+    alert(err.error || "Upload failed");
+    btn.disabled = false;
+    btn.innerText = "Submit Payment";
+  }
+};
 </script>
 
 </body>
 </html>
 
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Konkan Mart — Payment</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --green:#2e7d32;
+  --red:#e53935;
+  --orange:#ff7b00;
+  --blue:#1685a4;
+  --bg:#f4f6f3;
+}
+
+*{box-sizing:border-box;font-family:'Poppins',sans-serif}
+
+body{
+  background:linear-gradient(135deg,#e8f5e9,#f1f8e9);
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.container{
+  width:100%;
+  max-width:420px;
+  background:#fff;
+  padding:30px;
+  border-radius:16px;
+  box-shadow:0 12px 28px rgba(0,0,0,0.12);
+}
+
+.brand{
+  text-align:center;
+  margin-bottom:20px;
+}
+.brand h2{
+  color:var(--red);
+  margin-bottom:5px;
+}
+.brand p{
+  font-size:13px;
+  color:#777;
+}
+
+label{
+  font-size:13px;
+  color:#555;
+}
+input[type="text"], input[type="file"]{
+  width:100%;
+  padding:12px;
+  margin-top:6px;
+  margin-bottom:14px;
+  border-radius:10px;
+  border:1px solid #ccc;
+}
+input:focus{
+  outline:none;
+  border-color:var(--green);
+}
+
+.preview{
+  width:100%;
+  border-radius:12px;
+  margin-bottom:15px;
+  display:none;
+  border:1px dashed #ccc;
+}
+
+button{
+  width:100%;
+  padding:12px;
+  background:linear-gradient(135deg,var(--blue),#09bb91a2);
+  color:white;
+  border:none;
+  border-radius:25px;
+  font-size:15px;
+  font-weight:600;
+  cursor:pointer;
+  transition:.3s;
+}
+button:hover{
+  transform:translateY(-2px);
+  box-shadow:0 6px 15px rgba(0,0,0,0.25);
+}
+button:disabled{
+  opacity:.7;
+  cursor:not-allowed;
+}
+
+.note{
+  margin-top:15px;
+  font-size:12px;
+  color:#777;
+  text-align:center;
+}
+.note span{
+  color:var(--green);
+  font-weight:500;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <div class="brand">
+    <h2>Konkan Mart</h2>
+    <p>Secure Payment Verification</p>
+  </div>
+
+  FIELD NAME SAME 
+  <label>Order ID</label>
+  <input type="text" id="orderId" placeholder="Enter Order ID">
+
+  FIELD NAME SAME 
+  <label>Payment Screenshot</label>
+  <input type="file" id="screenshot" accept="image/*">
+
+  <img id="preview" class="preview">
+
+  <button id="btn">Submit Payment</button>
+
+  <div class="note">
+    Payment will be <span>verified by admin</span><br>
+    Order status updates automatically
+  </div>
+</div>
+
+<script>
+const fileInput = document.getElementById("screenshot");
+const preview = document.getElementById("preview");
+const btn = document.getElementById("btn");
+
+fileInput.onchange = () => {
+  const file = fileInput.files[0];
+  if(!file || !file.type.startsWith("image/")){
+    alert("Only image files allowed");
+    fileInput.value="";
+    return;
+  }
+  preview.src = URL.createObjectURL(file);
+  preview.style.display = "block";
+};
+
+btn.onclick = async () => {
+  const orderId = document.getElementById("orderId").value.trim();
+  const file = fileInput.files[0];
+
+  if(!orderId || !file){
+    alert("All fields required");
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerText = "Uploading...";
+
+  const fd = new FormData();
+  fd.append("screenshot", file); // ❗ SAME KEY
+
+  try{
+    const res = await fetch(`http://localhost:4000/api/payment/${orderId}`,{
+      method:"POST",
+      body:fd
+    });
+    const data = await res.json();
+    if(!res.ok) throw data;
+
+    btn.innerText = "Submitted ✅";
+    alert("Payment uploaded successfully!");
+  }catch(err){
+    alert(err.error || "Upload failed");
+    btn.disabled = false;
+    btn.innerText = "Submit Payment";
+  }
+};
+</script>
+
+</body>
+</html> -->

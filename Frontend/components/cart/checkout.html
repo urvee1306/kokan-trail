@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout | Konkan Mart</title>
+  <style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+
+  .checkout-container {
+  background-color: #fff;
+  padding: 45px;
+  width: 480px;                 /* 👈 card aur bada */
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  text-align: center;
+}
+
+.checkout-container h2 {
+  margin-bottom: 30px;
+  color: #222;
+  font-size: 26px;
+}
+
+.checkout-container img {
+  width: 320px;                 /* 👈 visible QR bada */
+  height: auto;
+  margin-bottom: 30px;
+  border-radius: 8px;
+}
+
+/* Button */
+#proceed-btn {
+  padding: 15px 30px;
+  font-size: 18px;
+  color: #fff;
+  background-color: #2e7d32;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  width: 100%;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .checkout-container {
+    width: 92%;
+    padding: 30px;
+  }
+
+  .checkout-container img {
+    width: 250px;
+  }
+}
+
+</style>
+
+</head>
+<body>
+
+  <div class="checkout-container">
+    <h2>Scan QR Code</h2>
+    <img src="../cart/Qrcode.jpg" alt="QR Code" id="qr-code">
+    <br>
+    <button id="proceed-btn" onclick="proceedToPayment()">Proceed to Payment Upload</button>
+  </div>
+
+  <script>
+    function proceedToPayment() {
+      // Redirect to payment upload page
+      window.location.href = '../payment/payment.html';
+    }
+  </script>
+
+</body>
+</html>
